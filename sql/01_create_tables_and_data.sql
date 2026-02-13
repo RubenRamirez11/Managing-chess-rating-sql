@@ -2,11 +2,8 @@
 
 CREATE TABLE USUARIOS(ID_USUARIO bigserial PRIMARY KEY, nombre_usuario varchar(100), EDAD INT, FECHA_REGISTRO DATE, NACIONALIDAD VARCHAR(50), ELO INT)
 
-insert into USUARIOS(nombre_usuario, edad, fecha_registro, nacionalidad, elo) 
-values 
-('BENANO97', 28, '11-02-2026', 'Peru', 1423), 
-('Conejuno1', 28, '11-02-2026', 'Perú', 1000), 
-('KnightMaster', 32, '2026-02-11', 'USA', 1850),
+insert into USUARIOS(nombre_usuario, edad, fecha_registro, nacionalidad, elo) values ('BENANO97', 28, '11-02-2026', 'Peru', 1423), 
+('Conejuno1', 28, '11-02-2026', 'Perú', 1000), ('KnightMaster', 32, '2026-02-11', 'USA', 1850),
 ('QueenGambit', 25, '2026-02-11', 'Spain', 1720),
 ('PawnStorm', 19, '2026-02-11', 'Mexico', 1200),
 ('RookAttack', 41, '2026-02-11', 'Argentina', 1650),
@@ -25,19 +22,19 @@ values
 ('ClassicPlayer', 40, '2026-02-11', 'Canada', 1900),
 ('FutureGM', 18, '2026-02-11', 'India', 2200);
 
-select * from usuarios order by elo desc -- Jugadores ordenados por elo
+select * from usuarios order by elo desc
 
--- Tabla de Partidas
 CREATE TABLE PARTIDAS (
     id_partida BIGSERIAL PRIMARY KEY,
-    jugador_1 BIGINT,
-    jugador_2 BIGINT,
-    ganador BIGINT, -- ID del ganador (NULL si empate)
+    id_blancas BIGINT REFERENCES usuarios(id_usuario),
+    id_negras BIGINT REFERENCES usuarios(id_usuario),
+    ganador BIGINT REFERENCES usuarios(id_usuario), -- ID del ganador (NULL si empate)
     fecha_partida TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO PARTIDAS (jugador_1, jugador_2, ganador, fecha_partida)
+INSERT INTO PARTIDAS (id_blancas, id_negras, ganador, fecha_partida)
 VALUES
+-- Partidas cercanas
 (1, 2, 1, '2026-02-01'),
 (2, 3, NULL, '2026-02-01'),  -- empate
 (3, 4, 3, '2026-02-02'),
@@ -48,16 +45,22 @@ VALUES
 (8, 9, NULL, '2026-02-04'),  -- empate
 (9, 10, 10, '2026-02-05'),
 (10, 11, 11, '2026-02-05'),
+
+-- Diferencias mayores
 (1, 10, 10, '2026-02-06'),
 (2, 12, 12, '2026-02-06'),
 (3, 15, 3, '2026-02-06'),   -- sorpresa
 (4, 18, 18, '2026-02-07'),
 (5, 20, 20, '2026-02-07'),
+
+-- Jugadores fuertes
 (15, 16, NULL, '2026-02-08'), -- empate
 (16, 17, 17, '2026-02-08'),
 (17, 18, 17, '2026-02-08'),
 (18, 19, 19, '2026-02-09'),
 (19, 20, 20, '2026-02-09'),
+
+-- Actividad general
 (1, 5, 5, '2026-02-09'),
 (2, 6, 2, '2026-02-09'),
 (3, 7, NULL, '2026-02-10'), -- empate
@@ -68,11 +71,15 @@ VALUES
 (8, 12, 12, '2026-02-10'),
 (9, 13, 13, '2026-02-11'),
 (10, 14, NULL, '2026-02-11'), -- empate
+
+-- Sorpresas (underdog gana)
 (15, 5, 5, '2026-02-11'),
 (18, 6, 6, '2026-02-11'),
 (20, 8, 8, '2026-02-11'),
 (14, 3, 3, '2026-02-11'),
 (13, 2, 2, '2026-02-11'),
+
+-- Últimas partidas
 (11, 16, 16, '2026-02-12'),
 (12, 17, 17, '2026-02-12'),
 (13, 18, NULL, '2026-02-12'), -- empate
@@ -80,10 +87,9 @@ VALUES
 (15, 20, 20, '2026-02-12');
 
 SELECT COUNT(*) 
-FROM PARTIDAS -- 40 partidas
+FROM PARTIDAS
 
 
 SELECT COUNT(*) 
 FROM PARTIDAS
-WHERE ganador IS NULL; -- 7 empates
-
+WHERE ganador IS NULL;
